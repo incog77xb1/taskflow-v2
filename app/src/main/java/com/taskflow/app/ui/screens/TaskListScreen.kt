@@ -3,7 +3,6 @@ package com.taskflow.app.ui.screens
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,19 +13,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.taskflow.app.domain.model.Categories
 import com.taskflow.app.domain.model.Task
 import com.taskflow.app.ui.components.TaskItem
@@ -146,7 +140,7 @@ fun TaskListScreen(
                         }
 
                         LinearProgressIndicator(
-                            progress = { animatedProgress },
+                            progress = animatedProgress,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(8.dp)
@@ -213,23 +207,13 @@ fun TaskListScreen(
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             items(filteredTasks, key = { it.id }) { task ->
-                                AnimatedVisibility(
-                                    visible = true,
-                                    enter = fadeIn(animationSpec = tween(300)) + slideInVertically(
-                                        initialOffsetY = { 40 },
-                                        animationSpec = tween(300)
-                                    ),
-                                    exit = fadeOut(animationSpec = tween(200)) + shrinkVertically()
-                                ) {
-                                    TaskItem(
-                                        task = task,
-                                        onToggle = { viewModel.toggleCompleted(task) },
-                                        onEdit = { onEditTask(task) },
-                                        onDelete = { viewModel.deleteTask(task) }
-                                    )
-                                }
+                                TaskItem(
+                                    task = task,
+                                    onToggle = { viewModel.toggleCompleted(task) },
+                                    onEdit = { onEditTask(task) },
+                                    onDelete = { viewModel.deleteTask(task) }
+                                )
                             }
-                            // Bottom spacer for FAB
                             item {
                                 Spacer(modifier = Modifier.height(80.dp))
                             }

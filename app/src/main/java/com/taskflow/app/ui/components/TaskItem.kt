@@ -1,9 +1,9 @@
 package com.taskflow.app.ui.components
 
-import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -17,14 +17,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.taskflow.app.domain.model.Priority
 import com.taskflow.app.domain.model.Task
 import java.text.SimpleDateFormat
@@ -39,10 +37,9 @@ fun TaskItem(
     modifier: Modifier = Modifier
 ) {
     val priority = Priority.from(task.priority)
-    val checkScale = remember { Animatable(1f) }
     val cardAlpha by animateFloatAsState(
         targetValue = if (task.isCompleted) 0.55f else 1f,
-        animationSpec = tween(durationMillis = 350, easing = FastOutSlowInEasing),
+        animationSpec = tween(durationMillis = 300),
         label = "alpha"
     )
 
@@ -54,12 +51,12 @@ fun TaskItem(
             .clickable { onEdit() },
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)
         ),
         border = BorderStroke(
             1.dp,
-            if (task.isCompleted) MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
-            else priority.color.copy(alpha = 0.25f)
+            if (task.isCompleted) MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)
+            else priority.color.copy(alpha = 0.35f)
         )
     ) {
         Row(
@@ -68,11 +65,9 @@ fun TaskItem(
                 .padding(horizontal = 16.dp, vertical = 14.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Animated Checkbox Button
             Box(
                 modifier = Modifier
                     .size(28.dp)
-                    .scale(checkScale.value)
                     .clip(CircleShape)
                     .background(
                         if (task.isCompleted) MaterialTheme.colorScheme.primary
@@ -84,9 +79,7 @@ fun TaskItem(
                         else priority.color.copy(alpha = 0.8f),
                         shape = CircleShape
                     )
-                    .clickable {
-                        onToggle()
-                    },
+                    .clickable { onToggle() },
                 contentAlignment = Alignment.Center
             ) {
                 if (task.isCompleted) {
@@ -101,7 +94,6 @@ fun TaskItem(
 
             Spacer(modifier = Modifier.width(14.dp))
 
-            // Task Content
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -131,7 +123,6 @@ fun TaskItem(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Category pill
                     Surface(
                         shape = RoundedCornerShape(8.dp),
                         color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
@@ -144,7 +135,6 @@ fun TaskItem(
                         )
                     }
 
-                    // Priority tag
                     Surface(
                         shape = RoundedCornerShape(8.dp),
                         color = priority.color.copy(alpha = 0.15f)
@@ -157,7 +147,6 @@ fun TaskItem(
                         )
                     }
 
-                    // Due date if present
                     if (task.dueDate != null) {
                         val sdf = remember { SimpleDateFormat("MMM d", Locale.getDefault()) }
                         Row(
@@ -180,7 +169,6 @@ fun TaskItem(
                 }
             }
 
-            // Delete action
             IconButton(
                 onClick = onDelete,
                 modifier = Modifier.size(32.dp)

@@ -7,7 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -30,6 +30,7 @@ class MainActivity : ComponentActivity() {
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     val navController = rememberNavController()
                     val viewModel: TaskViewModel = viewModel(factory = TaskViewModel.Factory((application as TaskFlowApplication).repository))
+                    val state by viewModel.uiState.collectAsState()
                     
                     NavHost(navController = navController, startDestination = "tasks") {
                         composable("tasks") {
@@ -40,7 +41,7 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("edit/{taskId}", arguments = listOf(navArgument("taskId") { type = NavType.LongType })) { backStackEntry ->
                             val taskId = backStackEntry.arguments?.getLong("taskId") ?: 0L
-                            AddEditTaskScreen(existingTask = viewModel.uiState.value.tasks.find { it.id == taskId }, onSave = { task -> viewModel.updateTask(task); navController.popBackStack() }, onBack = { navController.popBackStack() })
+                            AddEditTaskScreen(existingTask = state.tasks.find { it.id == taskId }, onSave = { task -> viewModel.updateTask(task); navController.popBackStack() }, onBack = { navController.popBackStack() })
                         }
                         composable("search") {
                             SearchScreen(viewModel = viewModel, onBack = { navController.popBackStack() }, onEditTask = { task -> navController.navigate("edit/${task.id}") })

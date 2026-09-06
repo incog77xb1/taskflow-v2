@@ -9,21 +9,21 @@ import com.taskflow.app.domain.model.TaskFilter
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
+data class TaskUiState(
+    val tasks: List<Task> = emptyList(),
+    val query: String = "",
+    val activeCount: Int = 0,
+    val isLoading: Boolean = false,
+    val error: String? = null
+)
+
 class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
 
     private val _filter = MutableStateFlow(TaskFilter())
-    val filter: StateFlow<TaskFilter> = _filter.asStateFlow()
-
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
-
-    private val _error = MutableStateFlow<String?>(null)
-    val error: StateFlow<String?> = _error.asStateFlow()
 
     val tasks: StateFlow<List<Task>> = _filter
         .debounce(150)
         .flatMapLatest { filter ->
-            _isLoading.value = true
             val flow = if (filter.query.isNotBlank()) {
                 repository.searchTasks(filter.query)
             } else if (filter.selectedCategory != null) {
@@ -31,12 +31,25 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
             } else {
                 repository.getAllTasks()
             }
-            flow.onEach { _isLoading.value = false }
+            flow
         }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
+    private val _isLoading = MutableStateFlow(false)
+    private val _error = MutableStateFlow<String?>(null)
+
     val activeTaskCount: StateFlow<Int> = repository.getActiveTaskCount()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0)
+
+    val uiState: StateFlow<TaskUiState> = combine(tasks, _filter, activeTaskCount, _isLoading, _error) { tasks, filter, activeCount, isLoading, error ->
+        TaskUiState(
+            tasks = tasks,
+            query = filter.query,
+            activeCount = activeCount,
+            isLoading = isLoading,
+            error = error
+        )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), TaskUiState())
 
     fun updateFilter(newFilter: TaskFilter) {
         _filter.value = newFilter

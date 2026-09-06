@@ -1,12 +1,11 @@
 package com.taskflow.app.ui.components
 
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -18,13 +17,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.taskflow.app.domain.model.Priority
 import com.taskflow.app.domain.model.Task
+import com.taskflow.app.ui.theme.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -37,63 +37,46 @@ fun TaskItem(
     modifier: Modifier = Modifier
 ) {
     val priority = Priority.from(task.priority)
-    val cardAlpha by animateFloatAsState(
-        targetValue = if (task.isCompleted) 0.55f else 1f,
-        animationSpec = tween(durationMillis = 300),
-        label = "alpha"
-    )
+    val cardBg = if (task.isCompleted) NeoGray else NeoWhite
 
-    Card(
+    NeoCard(
         modifier = modifier
             .fillMaxWidth()
-            .graphicsLayer { alpha = cardAlpha }
-            .clip(RoundedCornerShape(20.dp))
             .clickable { onEdit() },
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)
-        ),
-        border = BorderStroke(
-            1.dp,
-            if (task.isCompleted) MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.2f)
-            else priority.color.copy(alpha = 0.35f)
-        )
+        backgroundColor = cardBg,
+        shadowOffset = 4.dp,
+        borderWidth = 2.5.dp,
+        cornerRadius = 14.dp
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 14.dp),
+                .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Neo-Brutalist Square Checkbox
             Box(
                 modifier = Modifier
-                    .size(28.dp)
-                    .clip(CircleShape)
-                    .background(
-                        if (task.isCompleted) MaterialTheme.colorScheme.primary
-                        else Color.Transparent
-                    )
-                    .border(
-                        width = 2.dp,
-                        color = if (task.isCompleted) MaterialTheme.colorScheme.primary
-                        else priority.color.copy(alpha = 0.8f),
-                        shape = CircleShape
-                    )
+                    .size(30.dp)
+                    .clip(RoundedCornerShape(6.dp))
+                    .background(if (task.isCompleted) NeoGreen else NeoWhite)
+                    .border(2.5.dp, NeoDark, RoundedCornerShape(6.dp))
                     .clickable { onToggle() },
                 contentAlignment = Alignment.Center
             ) {
                 if (task.isCompleted) {
                     Icon(
                         imageVector = Icons.Default.Check,
-                        contentDescription = "Completed",
-                        tint = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(16.dp)
+                        contentDescription = "Done",
+                        tint = NeoDark,
+                        modifier = Modifier.size(20.dp)
                     )
                 }
             }
 
             Spacer(modifier = Modifier.width(14.dp))
 
+            // Task Info
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -101,8 +84,10 @@ fun TaskItem(
                 Text(
                     text = task.title,
                     style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = if (task.isCompleted) FontWeight.Normal else FontWeight.SemiBold
+                        fontWeight = FontWeight.Black,
+                        fontSize = 17.sp
                     ),
+                    color = if (task.isCompleted) NeoMuted else NeoDark,
                     textDecoration = if (task.isCompleted) TextDecoration.LineThrough else TextDecoration.None,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -111,72 +96,91 @@ fun TaskItem(
                 if (task.description.isNotBlank()) {
                     Text(
                         text = task.description,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Medium),
+                        color = if (task.isCompleted) NeoMuted else NeoDark.copy(alpha = 0.8f),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
                 }
 
                 Row(
-                    modifier = Modifier.padding(top = 4.dp),
+                    modifier = Modifier.padding(top = 6.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Surface(
-                        shape = RoundedCornerShape(8.dp),
-                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
+                    // Category Tag
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(NeoCyan)
+                            .border(1.5.dp, NeoDark, RoundedCornerShape(6.dp))
+                            .padding(horizontal = 8.dp, vertical = 2.dp)
                     ) {
                         Text(
-                            text = task.category,
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                            text = task.category.uppercase(),
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontWeight = FontWeight.Black,
+                                fontSize = 10.sp
+                            ),
+                            color = NeoDark
                         )
                     }
 
-                    Surface(
-                        shape = RoundedCornerShape(8.dp),
-                        color = priority.color.copy(alpha = 0.15f)
+                    // Priority Tag
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(priority.color)
+                            .border(1.5.dp, NeoDark, RoundedCornerShape(6.dp))
+                            .padding(horizontal = 8.dp, vertical = 2.dp)
                     ) {
                         Text(
                             text = priority.label,
-                            style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
-                            color = priority.color,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontWeight = FontWeight.Black,
+                                fontSize = 10.sp
+                            ),
+                            color = NeoDark
                         )
                     }
 
+                    // Due Date Tag
                     if (task.dueDate != null) {
                         val sdf = remember { SimpleDateFormat("MMM d", Locale.getDefault()) }
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(2.dp)
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(if (task.isOverdue) NeoPink else NeoYellow)
+                                .border(1.5.dp, NeoDark, RoundedCornerShape(6.dp))
+                                .padding(horizontal = 6.dp, vertical = 2.dp)
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Schedule,
-                                contentDescription = null,
-                                tint = if (task.isOverdue) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.outline,
-                                modifier = Modifier.size(12.dp)
-                            )
                             Text(
-                                text = sdf.format(Date(task.dueDate)),
-                                style = MaterialTheme.typography.labelSmall,
-                                color = if (task.isOverdue) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.outline
+                                text = "DUE: ${sdf.format(Date(task.dueDate)).uppercase()}",
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    fontWeight = FontWeight.Black,
+                                    fontSize = 10.sp
+                                ),
+                                color = NeoDark
                             )
                         }
                     }
                 }
             }
 
-            IconButton(
-                onClick = onDelete,
-                modifier = Modifier.size(32.dp)
+            // Delete action button
+            Box(
+                modifier = Modifier
+                    .size(34.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(NeoPink)
+                    .border(2.dp, NeoDark, RoundedCornerShape(8.dp))
+                    .clickable { onDelete() },
+                contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = "Delete",
-                    tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f),
+                    tint = NeoDark,
                     modifier = Modifier.size(18.dp)
                 )
             }

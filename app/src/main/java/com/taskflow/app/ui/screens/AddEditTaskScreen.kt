@@ -1,11 +1,10 @@
 package com.taskflow.app.ui.screens
 
-import androidx.compose.animation.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -20,9 +19,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.taskflow.app.domain.model.Categories
 import com.taskflow.app.domain.model.Priority
 import com.taskflow.app.domain.model.Task
+import com.taskflow.app.ui.components.NeoButton
+import com.taskflow.app.ui.components.NeoCard
+import com.taskflow.app.ui.theme.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -41,33 +44,50 @@ fun AddEditTaskScreen(
     var titleError by remember { mutableStateOf(false) }
 
     val isEdit = existingTask != null
-    val dateFormatter = remember { SimpleDateFormat("EEE, MMM d, yyyy", Locale.getDefault()) }
+    val dateFormatter = remember { SimpleDateFormat("EEE, MMM d", Locale.getDefault()) }
 
     Scaffold(
+        containerColor = NeoBackground,
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = if (isEdit) "Edit Task" else "Create Task",
-                        fontWeight = FontWeight.Bold
-                    )
-                },
-                navigationIcon = {
-                    IconButton(
-                        onClick = onBack,
-                        modifier = Modifier
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
-                    ) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                actions = {
-                    Button(
-                        onClick = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp, vertical = 14.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(44.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(NeoWhite)
+                        .border(2.5.dp, NeoDark, RoundedCornerShape(10.dp))
+                        .clickable { onBack() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = NeoDark)
+                }
+
+                Text(
+                    text = if (isEdit) "EDIT TASK" else "CREATE TASK",
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontWeight = FontWeight.Black,
+                        fontSize = 20.sp,
+                        letterSpacing = 0.5.sp
+                    ),
+                    color = NeoDark
+                )
+
+                // Save button
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(NeoGreen)
+                        .border(2.5.dp, NeoDark, RoundedCornerShape(10.dp))
+                        .clickable {
                             if (title.isBlank()) {
                                 titleError = true
-                                return@Button
+                                return@clickable
                             }
                             onSave(
                                 Task(
@@ -81,16 +101,12 @@ fun AddEditTaskScreen(
                                     isCompleted = existingTask?.isCompleted ?: false
                                 )
                             )
-                        },
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Icon(Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp))
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Text(if (isEdit) "Save" else "Create")
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
+                        }
+                        .padding(horizontal = 14.dp, vertical = 10.dp)
+                ) {
+                    Text("SAVE", fontWeight = FontWeight.Black, color = NeoDark)
                 }
-            )
+            }
         }
     ) { padding ->
         Column(
@@ -101,135 +117,175 @@ fun AddEditTaskScreen(
                 .padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            // Title field
-            OutlinedTextField(
-                value = title,
-                onValueChange = {
-                    title = it
-                    titleError = false
-                },
-                label = { Text("Task Title") },
-                placeholder = { Text("What needs to be done?") },
-                isError = titleError,
-                supportingText = if (titleError) {
-                    { Text("Title cannot be empty", color = MaterialTheme.colorScheme.error) }
-                } else null,
-                singleLine = true,
-                shape = RoundedCornerShape(16.dp),
-                modifier = Modifier.fillMaxWidth()
-            )
+            // Title field in Neo-Brutalist Box
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text("TITLE *", fontWeight = FontWeight.Black, fontSize = 13.sp, color = NeoDark)
+                OutlinedTextField(
+                    value = title,
+                    onValueChange = {
+                        title = it
+                        titleError = false
+                    },
+                    placeholder = { Text("What needs to get done?", color = NeoMuted) },
+                    isError = titleError,
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = NeoWhite,
+                        unfocusedContainerColor = NeoWhite,
+                        focusedBorderColor = NeoDark,
+                        unfocusedBorderColor = NeoDark,
+                        focusedTextColor = NeoDark,
+                        unfocusedTextColor = NeoDark
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(1.dp, NeoDark, RoundedCornerShape(12.dp))
+                )
+                if (titleError) {
+                    Text("Title is required!", color = NeoPink, fontWeight = FontWeight.Black, fontSize = 12.sp)
+                }
+            }
 
             // Description field
-            OutlinedTextField(
-                value = description,
-                onValueChange = { description = it },
-                label = { Text("Notes & Details (optional)") },
-                placeholder = { Text("Add any extra context...") },
-                minLines = 4,
-                shape = RoundedCornerShape(16.dp),
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            // Category Selector
-            Text("Category", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Categories.list.forEach { cat ->
-                    val isSelected = category == cat
-                    FilterChip(
-                        selected = isSelected,
-                        onClick = { category = cat },
-                        label = { Text(cat) },
-                        shape = RoundedCornerShape(12.dp),
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.primary,
-                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary
-                        )
-                    )
-                }
-            }
-
-            // Priority Selector
-            Text("Priority", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                listOf(
-                    Task.PRIORITY_LOW to "Low",
-                    Task.PRIORITY_MEDIUM to "Medium",
-                    Task.PRIORITY_HIGH to "High",
-                    Task.PRIORITY_URGENT to "Urgent"
-                ).forEach { (pVal, label) ->
-                    val isSelected = priority == pVal
-                    val pColor = Priority.from(pVal).color
-                    FilterChip(
-                        selected = isSelected,
-                        onClick = { priority = pVal },
-                        label = { Text(label, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal) },
-                        shape = RoundedCornerShape(12.dp),
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = pColor,
-                            selectedLabelColor = Color.White
-                        )
-                    )
-                }
-            }
-
-            // Quick Due Date Actions
-            Text("Due Date", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                val now = System.currentTimeMillis()
-                val today = remember { now + 86400000L }
-                val tomorrow = remember { now + 86400000L * 2 }
-                val nextWeek = remember { now + 86400000L * 7 }
-
-                SuggestionChip(
-                    onClick = { dueDate = today },
-                    label = { Text("Today") },
-                    shape = RoundedCornerShape(10.dp)
-                )
-                SuggestionChip(
-                    onClick = { dueDate = tomorrow },
-                    label = { Text("Tomorrow") },
-                    shape = RoundedCornerShape(10.dp)
-                )
-                SuggestionChip(
-                    onClick = { dueDate = nextWeek },
-                    label = { Text("Next Week") },
-                    shape = RoundedCornerShape(10.dp)
-                )
-                if (dueDate != null) {
-                    SuggestionChip(
-                        onClick = { dueDate = null },
-                        label = { Text("Clear", color = MaterialTheme.colorScheme.error) },
-                        shape = RoundedCornerShape(10.dp)
-                    )
-                }
-            }
-
-            if (dueDate != null) {
-                Surface(
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text("NOTES / DESCRIPTION", fontWeight = FontWeight.Black, fontSize = 13.sp, color = NeoDark)
+                OutlinedTextField(
+                    value = description,
+                    onValueChange = { description = it },
+                    placeholder = { Text("Any instructions or notes...", color = NeoMuted) },
+                    minLines = 3,
                     shape = RoundedCornerShape(12.dp),
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
-                    modifier = Modifier.fillMaxWidth()
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = NeoWhite,
+                        unfocusedContainerColor = NeoWhite,
+                        focusedBorderColor = NeoDark,
+                        unfocusedBorderColor = NeoDark,
+                        focusedTextColor = NeoDark,
+                        unfocusedTextColor = NeoDark
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(1.dp, NeoDark, RoundedCornerShape(12.dp))
+                )
+            }
+
+            // Category Selector Neo Style
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("CATEGORY", fontWeight = FontWeight.Black, fontSize = 13.sp, color = NeoDark)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Row(
-                        modifier = Modifier.padding(14.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    Categories.list.forEach { cat ->
+                        val isSelected = category == cat
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(if (isSelected) NeoCyan else NeoWhite)
+                                .border(2.dp, NeoDark, RoundedCornerShape(8.dp))
+                                .clickable { category = cat }
+                                .padding(horizontal = 12.dp, vertical = 8.dp)
+                        ) {
+                            Text(cat.uppercase(), fontWeight = FontWeight.Black, fontSize = 12.sp, color = NeoDark)
+                        }
+                    }
+                }
+            }
+
+            // Priority Selector Neo Style
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("PRIORITY LEVEL", fontWeight = FontWeight.Black, fontSize = 13.sp, color = NeoDark)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    listOf(
+                        Task.PRIORITY_LOW to "LOW",
+                        Task.PRIORITY_MEDIUM to "MED",
+                        Task.PRIORITY_HIGH to "HIGH",
+                        Task.PRIORITY_URGENT to "URGENT"
+                    ).forEach { (pVal, label) ->
+                        val isSelected = priority == pVal
+                        val pColor = Priority.from(pVal).color
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(if (isSelected) pColor else NeoWhite)
+                                .border(2.dp, NeoDark, RoundedCornerShape(8.dp))
+                                .clickable { priority = pVal }
+                                .padding(horizontal = 12.dp, vertical = 8.dp)
+                        ) {
+                            Text(
+                                label,
+                                fontWeight = FontWeight.Black,
+                                fontSize = 12.sp,
+                                color = NeoDark
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Due Date Selector Neo Style
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Text("DUE DATE", fontWeight = FontWeight.Black, fontSize = 13.sp, color = NeoDark)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    val now = System.currentTimeMillis()
+                    val today = now + 86400000L
+                    val tomorrow = now + 86400000L * 2
+                    val nextWeek = now + 86400000L * 7
+
+                    listOf("TODAY" to today, "TOMORROW" to tomorrow, "NEXT WEEK" to nextWeek).forEach { (text, time) ->
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(NeoWhite)
+                                .border(2.dp, NeoDark, RoundedCornerShape(8.dp))
+                                .clickable { dueDate = time }
+                                .padding(horizontal = 10.dp, vertical = 8.dp)
+                        ) {
+                            Text(text, fontWeight = FontWeight.Black, fontSize = 11.sp, color = NeoDark)
+                        }
+                    }
+
+                    if (dueDate != null) {
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(NeoPink)
+                                .border(2.dp, NeoDark, RoundedCornerShape(8.dp))
+                                .clickable { dueDate = null }
+                                .padding(horizontal = 10.dp, vertical = 8.dp)
+                        ) {
+                            Text("CLEAR", fontWeight = FontWeight.Black, fontSize = 11.sp, color = NeoDark)
+                        }
+                    }
+                }
+
+                if (dueDate != null) {
+                    NeoCard(
+                        modifier = Modifier.fillMaxWidth(),
+                        backgroundColor = NeoYellow,
+                        shadowOffset = 3.dp,
+                        cornerRadius = 10.dp
                     ) {
-                        Icon(Icons.Default.DateRange, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                        Text(
-                            text = "Due: ${dateFormatter.format(Date(dueDate!!))}",
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Icon(Icons.Default.DateRange, contentDescription = null, tint = NeoDark)
+                            Text(
+                                text = "DUE: ${dateFormatter.format(Date(dueDate!!)).uppercase()}",
+                                fontWeight = FontWeight.Black,
+                                fontSize = 13.sp,
+                                color = NeoDark
+                            )
+                        }
                     }
                 }
             }

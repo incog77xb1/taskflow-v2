@@ -3,6 +3,8 @@ package com.taskflow.app.ui.screens
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,18 +14,23 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.taskflow.app.domain.model.Categories
 import com.taskflow.app.domain.model.Task
+import com.taskflow.app.ui.components.NeoButton
+import com.taskflow.app.ui.components.NeoCard
 import com.taskflow.app.ui.components.TaskItem
+import com.taskflow.app.ui.theme.*
 import com.taskflow.app.ui.viewmodel.TaskViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,58 +54,84 @@ fun TaskListScreen(
     val progress = if (totalCount > 0) completedCount.toFloat() / totalCount else 0f
     val animatedProgress by animateFloatAsState(
         targetValue = progress,
-        animationSpec = tween(durationMillis = 600, easing = FastOutSlowInEasing),
-        label = "progress"
+        animationSpec = tween(durationMillis = 500),
+        label = "neo_progress"
     )
 
     Scaffold(
+        containerColor = NeoBackground,
         topBar = {
-            TopAppBar(
-                title = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(NeoBackground)
+                    .padding(horizontal = 20.dp, vertical = 14.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Column {
                         Text(
-                            text = "TaskFlow",
-                            style = MaterialTheme.typography.headlineMedium.copy(
-                                fontWeight = FontWeight.ExtraBold
-                            )
+                            text = "TASKFLOW*",
+                            style = MaterialTheme.typography.headlineLarge.copy(
+                                fontWeight = FontWeight.Black,
+                                fontSize = 32.sp,
+                                letterSpacing = (-1).sp
+                            ),
+                            color = NeoDark
                         )
                         Text(
-                            text = "Get things done effortlessly",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            text = "GET. SHIT. DONE.",
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontWeight = FontWeight.Black,
+                                fontSize = 11.sp,
+                                letterSpacing = 1.sp
+                            ),
+                            color = NeoPink
                         )
                     }
-                },
-                actions = {
-                    IconButton(
-                        onClick = onSearch,
+
+                    // Search Button Neo Style
+                    Box(
                         modifier = Modifier
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
+                            .size(46.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(NeoYellow)
+                            .border(2.5.dp, NeoDark, RoundedCornerShape(12.dp))
+                            .clickable { onSearch() },
+                        contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             Icons.Default.Search,
                             contentDescription = "Search",
-                            tint = MaterialTheme.colorScheme.onSurface
+                            tint = NeoDark,
+                            modifier = Modifier.size(24.dp)
                         )
                     }
-                    Spacer(modifier = Modifier.width(8.dp))
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
-                )
-            )
+                }
+            }
         },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
+            NeoButton(
                 onClick = onAddTask,
-                icon = { Icon(Icons.Default.Add, contentDescription = null) },
-                text = { Text("New Task", fontWeight = FontWeight.Bold) },
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-                shape = RoundedCornerShape(16.dp),
-                elevation = FloatingActionButtonDefaults.elevation(defaultElevation = 6.dp)
-            )
+                backgroundColor = NeoYellow,
+                shadowOffset = 5.dp,
+                cornerRadius = 14.dp
+            ) {
+                Icon(Icons.Default.Add, contentDescription = null, tint = NeoDark, modifier = Modifier.size(22.dp))
+                Spacer(modifier = Modifier.width(6.dp))
+                Text(
+                    text = "NEW TASK",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Black,
+                        fontSize = 15.sp,
+                        letterSpacing = 0.5.sp
+                    ),
+                    color = NeoDark
+                )
+            }
         }
     ) { padding ->
         Column(
@@ -106,19 +139,18 @@ fun TaskListScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            // Stats / Progress Card
+            // Stats / Progress Banner in Neo-Brutalism
             if (totalCount > 0) {
-                Card(
+                NeoCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 20.dp, vertical = 8.dp),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
-                    )
+                    backgroundColor = NeoCyan,
+                    shadowOffset = 4.dp,
+                    cornerRadius = 14.dp
                 ) {
                     Column(
-                        modifier = Modifier.padding(20.dp),
+                        modifier = Modifier.padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         Row(
@@ -127,63 +159,64 @@ fun TaskListScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "Daily Progress",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold
+                                text = "STATUS: ${completedCount}/${totalCount} DONE",
+                                style = MaterialTheme.typography.titleSmall.copy(
+                                    fontWeight = FontWeight.Black,
+                                    letterSpacing = 0.5.sp
+                                ),
+                                color = NeoDark
                             )
                             Text(
-                                text = "$completedCount of $totalCount done",
-                                style = MaterialTheme.typography.labelMedium,
-                                color = MaterialTheme.colorScheme.primary,
-                                fontWeight = FontWeight.SemiBold
+                                text = "${(progress * 100).toInt()}%",
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.Black
+                                ),
+                                color = NeoDark
                             )
                         }
 
-                        LinearProgressIndicator(
-                            progress = animatedProgress,
+                        // Neo Progress Bar with thick border
+                        Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(8.dp)
-                                .clip(CircleShape),
-                            color = MaterialTheme.colorScheme.primary,
-                            trackColor = MaterialTheme.colorScheme.surfaceVariant
-                        )
+                                .height(14.dp)
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(NeoWhite)
+                                .border(2.dp, NeoDark, RoundedCornerShape(6.dp))
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .fillMaxWidth(animatedProgress)
+                                    .background(NeoGreen)
+                            )
+                        }
                     }
                 }
             }
 
-            // Category Chips Row
+            // Category Filter Pills Neo Style
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .horizontalScroll(rememberScrollState())
-                    .padding(horizontal = 20.dp, vertical = 8.dp),
+                    .padding(horizontal = 20.dp, vertical = 10.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                FilterChip(
-                    selected = selectedCategory == null,
-                    onClick = { selectedCategory = null },
-                    label = { Text("All", fontWeight = FontWeight.SemiBold) },
-                    shape = RoundedCornerShape(12.dp),
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = MaterialTheme.colorScheme.primary,
-                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary
-                    )
+                NeoFilterChip(
+                    text = "ALL",
+                    isSelected = selectedCategory == null,
+                    activeColor = NeoGreen,
+                    onClick = { selectedCategory = null }
                 )
 
                 Categories.list.forEach { category ->
                     val isSelected = selectedCategory == category
-                    FilterChip(
-                        selected = isSelected,
-                        onClick = {
-                            selectedCategory = if (isSelected) null else category
-                        },
-                        label = { Text(category, fontWeight = FontWeight.SemiBold) },
-                        shape = RoundedCornerShape(12.dp),
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = MaterialTheme.colorScheme.primary,
-                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary
-                        )
+                    NeoFilterChip(
+                        text = category.uppercase(),
+                        isSelected = isSelected,
+                        activeColor = NeoGreen,
+                        onClick = { selectedCategory = if (isSelected) null else category }
                     )
                 }
             }
@@ -192,10 +225,13 @@ fun TaskListScreen(
             Box(modifier = Modifier.fillMaxSize()) {
                 when {
                     state.isLoading -> {
-                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                        CircularProgressIndicator(
+                            color = NeoDark,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
                     }
                     filteredTasks.isEmpty() -> {
-                        EmptyStateModern(
+                        EmptyStateNeo(
                             modifier = Modifier.align(Alignment.Center),
                             category = selectedCategory
                         )
@@ -203,8 +239,8 @@ fun TaskListScreen(
                     else -> {
                         LazyColumn(
                             modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 10.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
+                            verticalArrangement = Arrangement.spacedBy(14.dp)
                         ) {
                             items(filteredTasks, key = { it.id }) { task ->
                                 TaskItem(
@@ -226,35 +262,67 @@ fun TaskListScreen(
 }
 
 @Composable
-private fun EmptyStateModern(modifier: Modifier = Modifier, category: String?) {
+fun NeoFilterChip(
+    text: String,
+    isSelected: Boolean,
+    activeColor: Color,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(8.dp))
+            .background(if (isSelected) activeColor else NeoWhite)
+            .border(2.dp, NeoDark, RoundedCornerShape(8.dp))
+            .clickable { onClick() }
+            .padding(horizontal = 14.dp, vertical = 8.dp)
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelMedium.copy(
+                fontWeight = FontWeight.Black,
+                fontSize = 12.sp,
+                letterSpacing = 0.5.sp
+            ),
+            color = NeoDark
+        )
+    }
+}
+
+@Composable
+private fun EmptyStateNeo(modifier: Modifier = Modifier, category: String?) {
     Column(
         modifier = modifier.padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        Surface(
-            shape = CircleShape,
-            color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
-            modifier = Modifier.size(80.dp)
+        NeoCard(
+            modifier = Modifier.size(90.dp),
+            backgroundColor = NeoPink,
+            shadowOffset = 4.dp,
+            cornerRadius = 16.dp
         ) {
-            Box(contentAlignment = Alignment.Center) {
+            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
                 Icon(
-                    imageVector = Icons.Default.CheckCircle,
+                    imageVector = Icons.Default.Warning,
                     contentDescription = null,
-                    modifier = Modifier.size(40.dp),
-                    tint = MaterialTheme.colorScheme.primary
+                    modifier = Modifier.size(45.dp),
+                    tint = NeoDark
                 )
             }
         }
 
         Text(
-            text = if (category != null) "No tasks in $category" else "All caught up!",
-            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+            text = if (category != null) "NO $category TASKS!" else "NO TASKS FOUND!",
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.Black,
+                fontSize = 22.sp
+            ),
+            color = NeoDark
         )
         Text(
-            text = if (category != null) "Add a task to this category to get started" else "Relax or add a new task with the button below",
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            text = "Smash the + button to add one right now.",
+            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+            color = NeoMuted
         )
     }
 }

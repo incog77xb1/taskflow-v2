@@ -16,7 +16,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.taskflow.app.ui.theme.NeoDark
+import com.taskflow.app.ui.theme.NeoBorder
 import com.taskflow.app.ui.theme.NeoYellow
 
 @Composable
@@ -24,10 +24,9 @@ fun NeoButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     backgroundColor: Color = NeoYellow,
-    contentColor: Color = NeoDark,
-    cornerRadius: Dp = 12.dp,
+    cornerRadius: Dp = 14.dp,
     shadowOffset: Dp = 4.dp,
-    borderWidth: Dp = 2.5.dp,
+    borderWidth: Dp = 2.dp,
     content: @Composable RowScope.() -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -35,31 +34,33 @@ fun NeoButton(
 
     val animatedOffset by animateDpAsState(
         targetValue = if (isPressed) 0.dp else shadowOffset,
-        animationSpec = tween(durationMillis = 100),
-        label = "press_offset"
+        animationSpec = tween(durationMillis = 80),
+        label = "btn_press"
     )
 
-    Box(modifier = modifier) {
-        // Shadow (black)
+    Box(
+        modifier = modifier.padding(end = shadowOffset, bottom = shadowOffset)
+    ) {
+        // Shadow base
         Box(
             modifier = Modifier
                 .matchParentSize()
                 .offset(x = shadowOffset, y = shadowOffset)
-                .background(NeoDark, shape = RoundedCornerShape(cornerRadius))
+                .background(NeoBorder, shape = RoundedCornerShape(cornerRadius))
         )
-        // Foreground button
+        // Clickable Button Face
         Row(
             modifier = Modifier
                 .offset(x = shadowOffset - animatedOffset, y = shadowOffset - animatedOffset)
                 .clip(RoundedCornerShape(cornerRadius))
                 .background(backgroundColor)
-                .border(borderWidth, NeoDark, RoundedCornerShape(cornerRadius))
+                .border(borderWidth, NeoBorder, RoundedCornerShape(cornerRadius))
                 .clickable(
                     interactionSource = interactionSource,
                     indication = null,
                     onClick = onClick
                 )
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+                .padding(horizontal = 18.dp, vertical = 12.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
             content = content

@@ -9,7 +9,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -23,13 +22,11 @@ import androidx.compose.ui.unit.sp
 import com.taskflow.app.domain.model.Categories
 import com.taskflow.app.domain.model.Priority
 import com.taskflow.app.domain.model.Task
-import com.taskflow.app.ui.components.NeoButton
 import com.taskflow.app.ui.components.NeoCard
 import com.taskflow.app.ui.theme.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddEditTaskScreen(
     existingTask: Task? = null,
@@ -44,7 +41,7 @@ fun AddEditTaskScreen(
     var titleError by remember { mutableStateOf(false) }
 
     val isEdit = existingTask != null
-    val dateFormatter = remember { SimpleDateFormat("EEE, MMM d", Locale.getDefault()) }
+    val dateFormatter = remember { SimpleDateFormat("EEE, MMM d, yyyy", Locale.getDefault()) }
 
     Scaffold(
         containerColor = NeoBackground,
@@ -58,10 +55,10 @@ fun AddEditTaskScreen(
             ) {
                 Box(
                     modifier = Modifier
-                        .size(44.dp)
+                        .size(40.dp)
                         .clip(RoundedCornerShape(10.dp))
-                        .background(NeoWhite)
-                        .border(2.5.dp, NeoDark, RoundedCornerShape(10.dp))
+                        .background(NeoSurface)
+                        .border(2.dp, NeoBorder, RoundedCornerShape(10.dp))
                         .clickable { onBack() },
                     contentAlignment = Alignment.Center
                 ) {
@@ -69,21 +66,20 @@ fun AddEditTaskScreen(
                 }
 
                 Text(
-                    text = if (isEdit) "EDIT TASK" else "CREATE TASK",
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontWeight = FontWeight.Black,
-                        fontSize = 20.sp,
-                        letterSpacing = 0.5.sp
+                    text = if (isEdit) "Edit Task" else "New Task",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp
                     ),
                     color = NeoDark
                 )
 
-                // Save button
+                // Save Action Button
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(10.dp))
                         .background(NeoGreen)
-                        .border(2.5.dp, NeoDark, RoundedCornerShape(10.dp))
+                        .border(2.dp, NeoBorder, RoundedCornerShape(10.dp))
                         .clickable {
                             if (title.isBlank()) {
                                 titleError = true
@@ -102,9 +98,14 @@ fun AddEditTaskScreen(
                                 )
                             )
                         }
-                        .padding(horizontal = 14.dp, vertical = 10.dp)
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
                 ) {
-                    Text("SAVE", fontWeight = FontWeight.Black, color = NeoDark)
+                    Text(
+                        text = if (isEdit) "Update" else "Create",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        color = NeoDark
+                    )
                 }
             }
         }
@@ -115,64 +116,60 @@ fun AddEditTaskScreen(
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
                 .padding(20.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+            verticalArrangement = Arrangement.spacedBy(18.dp)
         ) {
-            // Title field in Neo-Brutalist Box
+            // Task Title
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text("TITLE *", fontWeight = FontWeight.Black, fontSize = 13.sp, color = NeoDark)
+                Text("Task Title", fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = NeoDark)
                 OutlinedTextField(
                     value = title,
                     onValueChange = {
                         title = it
                         titleError = false
                     },
-                    placeholder = { Text("What needs to get done?", color = NeoMuted) },
+                    placeholder = { Text("e.g. Finish quarterly presentation", color = NeoMuted) },
                     isError = titleError,
                     singleLine = true,
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = NeoWhite,
-                        unfocusedContainerColor = NeoWhite,
-                        focusedBorderColor = NeoDark,
-                        unfocusedBorderColor = NeoDark,
+                        focusedContainerColor = NeoSurface,
+                        unfocusedContainerColor = NeoSurface,
+                        focusedBorderColor = NeoBorder,
+                        unfocusedBorderColor = NeoBorder.copy(alpha = 0.5f),
                         focusedTextColor = NeoDark,
                         unfocusedTextColor = NeoDark
                     ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(1.dp, NeoDark, RoundedCornerShape(12.dp))
+                    modifier = Modifier.fillMaxWidth()
                 )
                 if (titleError) {
-                    Text("Title is required!", color = NeoPink, fontWeight = FontWeight.Black, fontSize = 12.sp)
+                    Text("Title is required", color = NeoPink, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
             }
 
-            // Description field
+            // Description
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                Text("NOTES / DESCRIPTION", fontWeight = FontWeight.Black, fontSize = 13.sp, color = NeoDark)
+                Text("Notes", fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = NeoDark)
                 OutlinedTextField(
                     value = description,
                     onValueChange = { description = it },
-                    placeholder = { Text("Any instructions or notes...", color = NeoMuted) },
+                    placeholder = { Text("Add any notes, links, or context...", color = NeoMuted) },
                     minLines = 3,
                     shape = RoundedCornerShape(12.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedContainerColor = NeoWhite,
-                        unfocusedContainerColor = NeoWhite,
-                        focusedBorderColor = NeoDark,
-                        unfocusedBorderColor = NeoDark,
+                        focusedContainerColor = NeoSurface,
+                        unfocusedContainerColor = NeoSurface,
+                        focusedBorderColor = NeoBorder,
+                        unfocusedBorderColor = NeoBorder.copy(alpha = 0.5f),
                         focusedTextColor = NeoDark,
                         unfocusedTextColor = NeoDark
                     ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(1.dp, NeoDark, RoundedCornerShape(12.dp))
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
 
-            // Category Selector Neo Style
+            // Category Chips
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("CATEGORY", fontWeight = FontWeight.Black, fontSize = 13.sp, color = NeoDark)
+                Text("Category", fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = NeoDark)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -182,20 +179,20 @@ fun AddEditTaskScreen(
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(if (isSelected) NeoCyan else NeoWhite)
-                                .border(2.dp, NeoDark, RoundedCornerShape(8.dp))
+                                .background(if (isSelected) NeoBlue.copy(alpha = 0.35f) else NeoSurface)
+                                .border(1.5.dp, if (isSelected) NeoBorder else NeoBorder.copy(alpha = 0.4f), RoundedCornerShape(8.dp))
                                 .clickable { category = cat }
-                                .padding(horizontal = 12.dp, vertical = 8.dp)
+                                .padding(horizontal = 12.dp, vertical = 7.dp)
                         ) {
-                            Text(cat.uppercase(), fontWeight = FontWeight.Black, fontSize = 12.sp, color = NeoDark)
+                            Text(cat, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium, fontSize = 13.sp, color = NeoDark)
                         }
                     }
                 }
             }
 
-            // Priority Selector Neo Style
+            // Priority Selection
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("PRIORITY LEVEL", fontWeight = FontWeight.Black, fontSize = 13.sp, color = NeoDark)
+                Text("Priority", fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = NeoDark)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -211,14 +208,14 @@ fun AddEditTaskScreen(
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(if (isSelected) pColor else NeoWhite)
-                                .border(2.dp, NeoDark, RoundedCornerShape(8.dp))
+                                .background(if (isSelected) pColor else NeoSurface)
+                                .border(1.5.dp, if (isSelected) NeoBorder else NeoBorder.copy(alpha = 0.4f), RoundedCornerShape(8.dp))
                                 .clickable { priority = pVal }
-                                .padding(horizontal = 12.dp, vertical = 8.dp)
+                                .padding(horizontal = 12.dp, vertical = 7.dp)
                         ) {
                             Text(
                                 label,
-                                fontWeight = FontWeight.Black,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                                 fontSize = 12.sp,
                                 color = NeoDark
                             )
@@ -227,9 +224,9 @@ fun AddEditTaskScreen(
                 }
             }
 
-            // Due Date Selector Neo Style
+            // Due Date
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text("DUE DATE", fontWeight = FontWeight.Black, fontSize = 13.sp, color = NeoDark)
+                Text("Due Date", fontWeight = FontWeight.SemiBold, fontSize = 14.sp, color = NeoDark)
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -239,16 +236,16 @@ fun AddEditTaskScreen(
                     val tomorrow = now + 86400000L * 2
                     val nextWeek = now + 86400000L * 7
 
-                    listOf("TODAY" to today, "TOMORROW" to tomorrow, "NEXT WEEK" to nextWeek).forEach { (text, time) ->
+                    listOf("Today" to today, "Tomorrow" to tomorrow, "Next Week" to nextWeek).forEach { (text, time) ->
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(NeoWhite)
-                                .border(2.dp, NeoDark, RoundedCornerShape(8.dp))
+                                .background(NeoSurface)
+                                .border(1.5.dp, NeoBorder.copy(alpha = 0.4f), RoundedCornerShape(8.dp))
                                 .clickable { dueDate = time }
-                                .padding(horizontal = 10.dp, vertical = 8.dp)
+                                .padding(horizontal = 12.dp, vertical = 7.dp)
                         ) {
-                            Text(text, fontWeight = FontWeight.Black, fontSize = 11.sp, color = NeoDark)
+                            Text(text, fontSize = 12.sp, fontWeight = FontWeight.Medium, color = NeoDark)
                         }
                     }
 
@@ -256,32 +253,32 @@ fun AddEditTaskScreen(
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(8.dp))
-                                .background(NeoPink)
-                                .border(2.dp, NeoDark, RoundedCornerShape(8.dp))
+                                .background(NeoPink.copy(alpha = 0.2f))
+                                .border(1.5.dp, NeoPink, RoundedCornerShape(8.dp))
                                 .clickable { dueDate = null }
-                                .padding(horizontal = 10.dp, vertical = 8.dp)
+                                .padding(horizontal = 10.dp, vertical = 7.dp)
                         ) {
-                            Text("CLEAR", fontWeight = FontWeight.Black, fontSize = 11.sp, color = NeoDark)
+                            Text("Clear", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = NeoDark)
                         }
                     }
                 }
 
                 if (dueDate != null) {
-                    NeoCard(
+                    Surface(
                         modifier = Modifier.fillMaxWidth(),
-                        backgroundColor = NeoYellow,
-                        shadowOffset = 3.dp,
-                        cornerRadius = 10.dp
+                        color = NeoSurface,
+                        shape = RoundedCornerShape(10.dp),
+                        border = androidx.compose.foundation.BorderStroke(1.5.dp, NeoBorder)
                     ) {
                         Row(
                             modifier = Modifier.padding(12.dp),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Icon(Icons.Default.DateRange, contentDescription = null, tint = NeoDark)
+                            Icon(Icons.Default.DateRange, contentDescription = null, tint = NeoDark, modifier = Modifier.size(18.dp))
                             Text(
-                                text = "DUE: ${dateFormatter.format(Date(dueDate!!)).uppercase()}",
-                                fontWeight = FontWeight.Black,
+                                text = "Due on ${dateFormatter.format(Date(dueDate!!))}",
+                                fontWeight = FontWeight.SemiBold,
                                 fontSize = 13.sp,
                                 color = NeoDark
                             )

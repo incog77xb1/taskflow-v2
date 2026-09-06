@@ -2,21 +2,22 @@ package com.taskflow.app.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Neo-Brutalism Palette
-val NeoBackground = Color(0xFFFFFDF0)       // Off-white / Cream
-val NeoYellow = Color(0xFFFFE600)           // Acid Yellow
-val NeoPink = Color(0xFFFF528E)             // Punchy Hot Pink
-val NeoCyan = Color(0xFF00F0FF)             // Electric Cyan
-val NeoGreen = Color(0xFF00E676)            // Vibrant Mint / Neon Green
-val NeoPurple = Color(0xFF9D4EDD)           // Bold Purple
-val NeoOrange = Color(0xFFFF7A00)           // Safety Orange
-val NeoDark = Color(0xFF121212)             // Pure/Deep Black for borders & text
-val NeoWhite = Color(0xFFFFFFFF)            // Clean pure white
-val NeoGray = Color(0xFFE5E5E5)             // Structural gray
-val NeoMuted = Color(0xFF757575)
+// Balanced Neo-Brutalism Palette (Gumroad / Notion-esque)
+val NeoBackground = Color(0xFFF7F4EA)       // Soft Warm Sand/Cream (Clean & Comfortable)
+val NeoSurface = Color(0xFFFFFFFF)          // Pure Card White
+val NeoDark = Color(0xFF18181B)             // Rich Charcoal Black
+val NeoMuted = Color(0xFF71717A)            // Slate Neutral Gray
+val NeoBorder = Color(0xFF18181B)           // Defined 2dp Outline
 
-// Priority colors with Neo-Brutalist punch
-val PriorityLow = NeoGreen
-val PriorityMedium = NeoYellow
-val PriorityHigh = NeoOrange
-val PriorityUrgent = NeoPink
+// Unified Accent Colors
+val NeoYellow = Color(0xFFFFD12E)           // Sunny Warm Gold (Action items / Highlights)
+val NeoGreen = Color(0xFF4ADE80)            // Fresh Mint Green (Success / Completion)
+val NeoPink = Color(0xFFFB7185)             // Coral Red/Pink (Alerts / Delete)
+val NeoBlue = Color(0xFF60A5FA)             // Clean Sky Blue (Categories)
+val NeoPurple = Color(0xFFA78BFA)           // Modern Lilac (Secondary tags)
+
+// Task Priority Levels
+val PriorityLow = Color(0xFF4ADE80)         // Soft Mint
+val PriorityMedium = Color(0xFFFFD12E)      // Warm Yellow
+val PriorityHigh = Color(0xFFFB923C)        // Soft Orange
+val PriorityUrgent = Color(0xFFFB7185)      // Coral Pink

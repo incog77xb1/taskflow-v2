@@ -25,10 +25,23 @@ fun SearchScreen(viewModel: TaskViewModel, onBack: () -> Unit, onEditTask: (Task
         topBar = { TopAppBar(title = { Text("Search") }, navigationIcon = { IconButton(onClick = onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back") } }) }
     ) { padding ->
         Column(modifier = Modifier.fillMaxSize().padding(padding)) {
-            OutlinedTextField(value = state.query, onValueChange = { viewModel.updateQuery(it) }, placeholder = { Text("Search...") }, leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) }, trailingIcon = { if (state.query.isNotEmpty()) IconButton(onClick = { viewModel.updateQuery("") }) { Icon(Icons.Default.Clear, contentDescription = "Clear") } }, singleLine = true, modifier = Modifier.fillMaxWidth().padding(16.dp))
-            if (state.query.isNotBlank() && state.tasks.isEmpty()) EmptyState(modifier = Modifier.align(Alignment.CenterHorizontally), title = "No results", subtitle = "Try different terms")
-            else LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(state.tasks, key = { it.id }) { task -> TaskItem(task = task, onToggle = { viewModel.toggleCompleted(task) }, onEdit = { onEditTask(task) }, onDelete = { viewModel.deleteTask(task) }) }
+            OutlinedTextField(
+                value = state.query,
+                onValueChange = { viewModel.updateQuery(it) },
+                placeholder = { Text("Search...") },
+                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                trailingIcon = { if (state.query.isNotEmpty()) IconButton(onClick = { viewModel.updateQuery("") }) { Icon(Icons.Default.Clear, contentDescription = "Clear") } },
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth().padding(16.dp)
+            )
+            if (state.query.isNotBlank() && state.tasks.isEmpty()) {
+                EmptyState(modifier = Modifier.align(Alignment.CenterHorizontally), title = "No results", subtitle = "Try different terms")
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    items(state.tasks, key = { it.id }) { task ->
+                        TaskItem(task = task, onToggle = { viewModel.toggleCompleted(task) }, onEdit = { onEditTask(task) }, onDelete = { viewModel.deleteTask(task) })
+                    }
+                }
             }
         }
     }

@@ -1,0 +1,3 @@
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
+-keep class com.taskflow.app.data.** { *; }

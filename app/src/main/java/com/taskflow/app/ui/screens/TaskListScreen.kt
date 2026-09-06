@@ -30,7 +30,7 @@ fun TaskListScreen(viewModel: TaskViewModel, onAddTask: () -> Unit, onEditTask: 
         Box(modifier = Modifier.fillMaxSize().padding(padding)) {
             when {
                 state.isLoading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                state.tasks.isEmpty() -> EmptyState(modifier = Modifier.align(Alignment.Center))
+                state.tasks.isEmpty() -> EmptyState(modifier = Modifier.align(Alignment.Center), title = "No tasks yet", subtitle = "Tap + to add your first task")
                 else -> Column(modifier = Modifier.fillMaxSize()) {
                     ActiveTasksBar(count = state.activeCount)
                     LazyColumn(modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -52,11 +52,11 @@ private fun ActiveTasksBar(count: Int) {
 }
 
 @Composable
-fun EmptyState(modifier: Modifier = Modifier) {
+fun EmptyState(modifier: Modifier = Modifier, title: String, subtitle: String) {
     Column(modifier = modifier.padding(32.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         Icon(Icons.Default.CheckCircle, contentDescription = null, modifier = Modifier.size(64.dp), tint = MaterialTheme.colorScheme.outline)
         Spacer(modifier = Modifier.height(16.dp))
-        Text("No tasks yet", style = MaterialTheme.typography.titleMedium)
-        Text("Tap + to create your first task", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(title, style = MaterialTheme.typography.titleMedium)
+        Text(subtitle, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }

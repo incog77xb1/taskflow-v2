@@ -25,10 +25,10 @@ data class Task(
 }
 
 enum class Priority(val value: Int, val label: String, val color: Color) {
-    LOW(Task.PRIORITY_LOW, "LOW", NeoGreen),
-    MEDIUM(Task.PRIORITY_MEDIUM, "MED", NeoYellow),
-    HIGH(Task.PRIORITY_HIGH, "HIGH", NeoOrange),
-    URGENT(Task.PRIORITY_URGENT, "URGENT", NeoPink);
+    LOW(Task.PRIORITY_LOW, "LOW", PriorityLow),
+    MEDIUM(Task.PRIORITY_MEDIUM, "MED", PriorityMedium),
+    HIGH(Task.PRIORITY_HIGH, "HIGH", PriorityHigh),
+    URGENT(Task.PRIORITY_URGENT, "URGENT", PriorityUrgent);
 
     companion object {
         fun from(value: Int): Priority = entries.find { it.value == value } ?: MEDIUM

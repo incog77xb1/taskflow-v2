@@ -5,23 +5,23 @@ import androidx.compose.runtime.Composable
 
 private val NeoBrutalistColorScheme = lightColorScheme(
     primary = NeoDark,
-    onPrimary = NeoWhite,
+    onPrimary = NeoSurface,
     primaryContainer = NeoYellow,
     onPrimaryContainer = NeoDark,
     secondary = NeoPink,
     onSecondary = NeoDark,
-    secondaryContainer = NeoCyan,
+    secondaryContainer = NeoBlue,
     onSecondaryContainer = NeoDark,
     tertiary = NeoGreen,
     onTertiary = NeoDark,
     background = NeoBackground,
     onBackground = NeoDark,
-    surface = NeoWhite,
+    surface = NeoSurface,
     onSurface = NeoDark,
     surfaceVariant = NeoBackground,
     onSurfaceVariant = NeoDark,
-    outline = NeoDark,
-    outlineVariant = NeoDark
+    outline = NeoBorder,
+    outlineVariant = NeoBorder
 )
 
 @Composable

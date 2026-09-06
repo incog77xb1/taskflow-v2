@@ -1,5 +1,6 @@
 package com.taskflow.app
 
+import com.taskflow.app.domain.model.Priority
 import com.taskflow.app.domain.model.Task
 import org.junit.Assert.*
 import org.junit.Test
@@ -24,7 +25,7 @@ class TaskViewModelTest {
 
     @Test
     fun `priority from value`() {
-        assertEquals("Low", com.taskflow.app.domain.model.Priority.from(0).label)
-        assertEquals("Urgent", com.taskflow.app.domain.model.Priority.from(3).label)
+        assertEquals("LOW", Priority.from(0).label)
+        assertEquals("URGENT", Priority.from(3).label)
     }
 }
